@@ -1,21 +1,17 @@
 "use client";
-
 import { useState } from "react";
 
-export default function Home() {
+export default function Page() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
 
     const userMessage = { role: "user", content: input };
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages([...messages, userMessage]);
     setInput("");
-    setLoading(true);
 
-    // FastChat API Call
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -26,44 +22,37 @@ export default function Home() {
     const botMessage = { role: "assistant", content: data.reply };
 
     setMessages((prev) => [...prev, botMessage]);
-    setLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center p-4 bg-white">
-      <h1 className="text-3xl font-bold mb-4 text-blue-600">FastChat</h1>
+    <div className="flex flex-col h-screen bg-gradient-to-b from-purple-600 to-blue-600 p-4 text-white">
+      <h1 className="text-4xl font-bold text-center mb-4">FastChat AI</h1>
 
-      <div className="w-full max-w-xl bg-gray-100 p-4 rounded-lg shadow-md mb-4 h-[60vh] overflow-auto">
+      <div className="flex-1 bg-white/20 backdrop-blur-md rounded-lg p-4 overflow-y-auto space-y-3">
         {messages.map((msg, i) => (
           <div
             key={i}
-            className={`p-2 my-2 rounded-lg ${
+            className={`p-3 rounded-xl max-w-[75%] ${
               msg.role === "user"
-                ? "bg-blue-500 text-white self-end"
-                : "bg-gray-300 text-black self-start"
+                ? "bg-green-400 ml-auto text-black"
+                : "bg-white/70 text-black"
             }`}
           >
             {msg.content}
           </div>
         ))}
-
-        {loading && (
-          <div className="bg-gray-300 text-black p-2 rounded-lg w-fit">
-            FastChat is typing…
-          </div>
-        )}
       </div>
 
-      <div className="flex w-full max-w-xl">
+      <div className="mt-4 flex gap-2">
         <input
-          className="flex-1 p-2 border rounded-l-lg"
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          className="flex-1 p-3 rounded-xl text-black outline-none"
           placeholder="Type your message..."
         />
         <button
           onClick={sendMessage}
-          className="bg-blue-600 text-white px-4 rounded-r-lg"
+          className="bg-yellow-400 text-black px-6 py-3 rounded-xl font-bold hover:bg-yellow-500"
         >
           Send
         </button>
@@ -71,3 +60,4 @@ export default function Home() {
     </div>
   );
 }
+
